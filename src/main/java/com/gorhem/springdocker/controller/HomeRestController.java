@@ -10,6 +10,6 @@ public class HomeRestController {
 
     @GetMapping
     public String get(){
-        return "Your application serving successfully!";
+        return "Your application has been successfully deployed!";
     }
 }
