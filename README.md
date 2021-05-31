@@ -21,11 +21,11 @@ In case of your application is not ready for deployment, you can follow tutorial
 AWS IAM stands for Identity and Access Management, with it you can manage access to AWS services and resources. We will create a Group with the necessary policies to push the docker image to the ECR repository and pull it to the EC2 instance.\
 Search IAM in AWS search bar → User Groups → Create group → Define a name for the group and save 
 
-![IAM-User-groups](IAM-User-groups.png)
+![IAM-User-groups](images/IAM-User-groups.png)
  
 After creating a Group without user and policy we will click group name from the list to edit. Navigate to the **“Permissions”**** tab, click **“Add permissions”** and choose **“Create Inline Policy”**.
 
- ![IAM-Permissions](IAM-Permissions.png)
+ ![IAM-Permissions](images/IAM-Permissions.png)
 
 Navigate to the **“JSON”** tab and copy the below policy to yours. For the official guide [Repository policy examples]( https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policy-examples.html) 
 ```
@@ -53,7 +53,7 @@ Click **“Review Policy”**, write a name, and click **“Create Policy”**.
 
 Now we need a User that will have these privileges. Go to the IAM → User tab and click **“Add user”**. Specify a name and choose **“Programmatic access”** for access type. Click **“Next: Permissions”**.
 
- ![IAM-User-Access-type](access-type.png)
+ ![IAM-User-Access-type](images/access-type.png)
 
 Choose the group you created then click **“Next: Tags”**. There is no need for a tag right now, click **“Next: Review”** then click **“Create user”**.\
 AWS creates Access Key ID and Secret Access Key for your user. Click **“Download .csv”** and keep it. We will use this information in the Bitbucket Pipeline to push Docker Image to the AWS ECR repository.
@@ -64,29 +64,29 @@ AWS ECR → Private tab → Create Repository, provide a name for repository the
 
 URI will be needed to access.
 
-![ECR-Repository](ecr-repository.png)
+![ECR-Repository](images/ecr-repository.png)
  
 ## How to create EC2 Instance?
 AWS EC2 → Instances → Launch instances 
 Now you need to choose a Machine Image. Let’s choose Ubuntu Server Image.
 
- ![](ubuntu-image.png)
+ ![ubuntu-image](images/ubuntu-image.png)
 
 In the next step **“Choose an Intence Type”**, you need to choose the appropriate mix of resources. We will continue with t2.micro which is a free tier eligible type. Go to **“Configure Security Group”** tab we need to open 8080 port to the public. Click **“Add Rule”** and write 8080 into **“Port Range”**.
 
- ![](port-range.png)
+ ![port-range](images/port-range.png)
  
 Click **“Review and Launch”** then **“Launch”**. Choose **“Create a new key pair”** and write a name for your key pair that will be used to connect to the instance. Click **“Download Key Pair”**.
 
- ![](create-key-pair.png)
+ ![create-key-pair](images/create-key-pair.png)
  
 Now you have an instance running on the cloud you can monitor the state on the Instances page. Clicking the checkbox will make details display at bottom of the screen.
 
- ![](ec2-detail.png)
+ ![ec2-detail](images/ec2-detail.png)
  
 To SSH your instance you can use PuTTY. You need to convert **“.pem”** file to **“.ppk”** file to connect to your instance using PuTTY. When you install PuTTY provides a tool named PuTTYgen, which converts keys to the required format for PuTTY. Open PuTTYgen and make sure you have the right parameters then click load.
 
- ![](puttygen-pair-load.png)
+ ![puttygen-pair-load](images/puttygen-pair-load.png)
  
 Choose your downloaded **“.pem”** file by choosing the option **“All Files(*.*)”**. After successfully loaded click **“Save Private Key”**. You can close PuTTYgen.
 
@@ -94,7 +94,7 @@ Go back to your EC2 Instances list page and click **“Connect”**, navigate to
 
 Open PuTTY, paste into the **“Host Name”** field then go to Connection → SSH → Auth
 
- ![](putty-auth.png)
+ ![putty-auth](images/putty-auth.png)
  
 Browse and select **“.ppk”** file that you converted with PuTTYgen. Click **“Open”** which will open the terminal of your instance.
 
@@ -122,7 +122,7 @@ A Dockerfile is a text document that contains commands that we need to create a 
 
 Dockerfile contains followed commands:
 
- ![](dockerfile.png)
+ ![dockerfile](images/dockerfile.png)
  
 **FROM** command defines the image that will be used as a base. The example application needs JDK version 8 so, we add 8 after the colon to specify the version number.
 
@@ -130,7 +130,7 @@ As a web application, we need a port for upcoming requests. With **EXPOSE** comm
 
 The example project is a Maven project, to run our project Maven will create a jar file that can be runnable in any JDK installed machine. **ADD** command will add that jar file into our docker image. The first parameter of ADD command is the default path of the jar file located after run **“mvn install”** command. The second parameter is what will be the name of the jar in the image. For the customize created jar name you can add **“fileName”** tag in **“build”** tag as shown below. **Be careful if you do that you should update your Dockerfile ADD command’s first parameter.**
 
- ![](pom.png)
+ ![pom](images/pom.png)
  
 And lastly, we have **ENTRYPOINT** command that will execute our jar file when the container starts running. 
 
@@ -145,7 +145,7 @@ With this script, we will pull the latest Docker Image from ECR repository and r
 
     When you choose the ECR repository that just created and click **“View push commands”**. You can directly copy and use the given script in the first step. 
 
-     ![](ecr-auth-script.png)
+     ![ecr-auth-script](images/ecr-auth-script.png)
  
 *	Pull docker image from ECR repository to EC2 instance
 
