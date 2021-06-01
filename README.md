@@ -5,7 +5,7 @@ Whenever we push a commit into the Bitbucket repository, Pipeline will process t
 1.	Build the project and create a jar file
 2.	Create a Docker Image with the new jar and transfer it into the AWS ECR Repository
 3.	Pull the latest Image from AWS ECR to EC2 instance and update the Docker container.
-## What do we need?
+## What Do We Need?
 *	A web application
 *	**AWS IAM User** that has permissions to push Docker Image to AWS ECR and pull into AWS EC2
 *	**AWS ECR (Elastic Container Registry)** Repository to store Docker Images
@@ -17,7 +17,7 @@ Whenever we push a commit into the Bitbucket repository, Pipeline will process t
 In case of your application is not ready for deployment, you can follow tutorial steps with the simple application that I created. Dockerfile, Shell Script, and YAML files have already included, you need the add your AWS services connection information. The tutorial shows where you can find this information.
 [Example Project](https://github.com/Gorhem/spring-web-docker-deployment) 
 
-## Create an AWS IAM User and configure
+## Create an AWS IAM User and Configure
 AWS IAM stands for Identity and Access Management, with it you can manage access to AWS services and resources. We will create a Group with the necessary policies to push the docker image to the ECR repository and pull it to the EC2 instance.\
 Search IAM in AWS search bar → User Groups → Create group → Define a name for the group and save 
 
@@ -172,12 +172,13 @@ sudo docker pull {this-part-unique-to-you}.dkr.ecr.us-east-2.amazonaws.com/sprin
 sudo docker run --name my-container-name -p 8080:8080 -d {this-part-unique-to-you}.dkr.ecr.us-east-2.amazonaws.com/spring-web:latest
 ```
 
-## What is a Bitbucket pipelines?
+## What is the Bitbucket Pipelines?
 ""Bitbucket Pipelines"" is an integrated CI/CD service built into Bitbucket. It allows you to automatically build, test, and deploy your code based on a configuration file in your repository. 
 
 To define pipeline we will create **“bitbucket-pipelines.yml”** file in the project root directory. In this pipeline, we will define the steps need to perform for deploying the application into AWS EC2 instance.
 
-Before writing the steps pipeline require a template image. At the top, we provide a **“maven”** image according to our project type. 5 line defines name of the pipeline.
+Before writing the steps pipeline require a template image. At the top, we provide a **“maven”** image according to our project type.
+
 1.	In the first step, we are creating a jar by running mvn commands and define produced files as **“artifacts”** that will give us the ability to access them in another step.
 2.	In the second step, we are creating Docker Image with the **“docker build”** command then push the image to ECR repository with the help of the pipe which Atlassian provides. We need to give ECR connection information as parameters to this pipe to push the created image. 
 3.	And lastly, we will give EC2 instance connection as parameters to another Atlassian pipe that will run **“deployment.sh”** script in EC2 instance.
@@ -196,9 +197,8 @@ pipelines:
           artifacts:
             - target/**
       - step:
-          deployment: Test
           script:
-            - docker build ./ -t $AWS_ECR_REPOSITORY --build-arg ENV=dev
+            - docker build ./ -t $AWS_ECR_REPOSITORY
             - pipe: "atlassian/aws-ecr-push-image:1.1.0"
               variables:
                 AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
@@ -219,12 +219,12 @@ Create a repository and go to **“Repository settings”** → **“Settings”
 
 Add the following variables;
 
-*	AWS_ECR_REPOSITORY → ECR Repository name
-*	AWS_ACCESS_KEY_ID → Access Key ID of your User, you can copy it from the downloaded **“.csv”** file
-*	AWS_SECRET_ACCESS_KEY → Secret Access Key of your User, you can copy it from the downloaded **“.csv”** file
-*	AWS_DEFAULT_REGION → Subdomain of your ECR Repository URI (dkr.ecr.us-east-2.amazonaws.com)or subdomain of AWS console URI (us-east-2.console.aws.amazon.com) is your region. That is → **“us-east-2”** in this example.
-*	SERVER_IP → EC2 Instance Public Ip. You can find it on the **“Instances”** page on AWS by selecting your instance.
-*	SSH_KEY → To obtain a valid formatted private key, open PuTTYgen, click **“Load”**, and choose your **“.ppk”** file that is created earlier to connect EC2 Instance. From the top menu choose **“Conversions”** → **“Export OpenSSH Key”**. Give a name to the file and add the **“.pem”** extension. Open created **“.pem”** file with a text editor and copy content then convert it to base64 string. You can use any online base64 encode tool.
+*	**AWS_ECR_REPOSITORY** → ECR Repository name
+*	**AWS_ACCESS_KEY_ID** → Access Key ID of your User, you can copy it from the downloaded **“.csv”** file
+*	**AWS_SECRET_ACCESS_KEY** → Secret Access Key of your User, you can copy it from the downloaded **“.csv”** file
+*	**AWS_DEFAULT_REGION** → Subdomain of your ECR Repository URI (dkr.ecr.us-east-2.amazonaws.com)or subdomain of AWS console URI (us-east-2.console.aws.amazon.com) is your region. That is → **“us-east-2”** in this example.
+*	**SERVER_IP** → EC2 Instance Public Ip. You can find it on the **“Instances”** page on AWS by selecting your instance.
+*	**SSH_KEY** → To obtain a valid formatted private key, open PuTTYgen, click **“Load”**, and choose your **“.ppk”** file that is created earlier to connect EC2 Instance. From the top menu choose **“Conversions”** → **“Export OpenSSH Key”**. Give a name to the file and add the **“.pem”** extension. Open created **“.pem”** file with a text editor and copy content then convert it to base64 string. You can use any online base64 encode tool.
 
 
 ## How to add the project to Bitbucket?
@@ -245,7 +245,7 @@ If there is any conflict;
 Lastly;
 *	**git push -u origin master** // Push project to the repository
 
-## Test Deployment
+## Testing Deployment
 With using Public Ip or Public DNS of the EC2 Instance make an HTTP request to port 8080.
 
 `https://Your-public-ip:80809`
